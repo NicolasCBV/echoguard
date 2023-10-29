@@ -1,6 +1,6 @@
 {
   "name": "echoguard",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "(ALPHA TEST) Lib used to handle with logs",
   "author": "Nícolas Basilio",
   "license": "MIT",
