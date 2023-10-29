@@ -1,0 +1,35 @@
+{
+   "compilerOptions": {
+    "module": "CommonJs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "allowJs": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+
+    "resolveJsonModule": true,
+
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,
+
+    "noImplicitAny": true,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@service/*": ["src/app/service/*"],
+      "@infra/*": ["src/infra/*"],
+      "@tests/*": ["tests/*"],
+      "@utils/*": ["src/utils/*"]
+    }
+  }
+}

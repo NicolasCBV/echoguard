@@ -1,0 +1,16 @@
+.husky/
+dist/
+src/
+tests/
+.github/
+.eslintrc.js
+.gitignore
+.prettierrc
+commitlint.config.js
+jest*
+*db*
+main.ts
+nest-cli.json
+pnpm-lock.yaml
+tsconfig.build.json
+tsconfig.json

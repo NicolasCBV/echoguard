@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="theme-color" content="#26945D">
+
+		<title>Echo Guard</title>
+
+		<link rel="apple-touch-icon" href="/images/logo16.png"/>
+		<link rel="manifest" href="/manifest.json" />
+
+		<link rel="shortcut icon" type="image/png" href="/images/logo.png"/>
+
+		<link rel="stylesheet" href="/css/globals.css" />
+		<link rel="stylesheet" href="/css/index.css" />
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;700&display=swap"
+    rel="stylesheet">
+	</head>
+	<body>
+		<div id="popup-pin"></div>
+
+		<header>
+			<img src="/images/logo.png" alt="logo"/>
+			<h1>Echo Guard</h1>
+		</header>
+
+		<main>
+			<h1 id="app-title"><%= appName %></h1>
+			<p>Watching for new logs on your system!</p>
+
+			<div id="options">
+				<a href="/logs" class="button">
+					Reload	
+				</a>
+				<button class="button"> 
+					Restart
+				</button>
+				<select id="filter" name="Filter" class="outline-button">
+					<option>All</option>
+					<option>Error</option>
+					<option>Info</option>
+					<option>Debug</option>
+					<option>Warning</option>
+					<option>Critical</option>
+					<option>Alert</option>
+					<option>Emergency</option>
+				</select>
+			</div>
+			<span class="division"></span>
+
+			<ul id="logs">
+				<% logs.forEach(function (log) { %>
+					<li id="<%= log.id %>-<%= log.name.replaceAll(' ', '_') %>">
+						<button type="button">
+							<i class="level fa-solid 
+								<% switch(log.level) {
+									case 'ERROR':%>
+										fa-bomb
+								<%		break
+									case 'ALERT':%>
+										fa-bell
+								<%		break
+									case 'DEBUG':%>
+										fa-bug
+								<%		break
+									case 'WARNING':%>
+										fa-triangle-exclamation
+								<%		break
+									case 'EMERGENCY': %>
+										fa-skull-crossbones
+								<%		break
+									case 'INFO': %>
+										fa-circle-info
+								<%		break
+									case 'CRITICAL': %>
+										fa-circle-radiation
+								<%		break
+									}
+								%>
+							"></i>						
+							<div class="text-log">
+								<h2><%= log.name %></h2>
+								<p>Level: <%= log.level %></p>
+							</div>
+							<span class="<%= log.level.toLowerCase() %>-color"></span>
+						</button>
+					</li>
+				<% }) %>
+			</ul>
+		</main>
+
+		<script>
+			window.logsEntities = <%- JSON.stringify(logs) %>;
+		</script>
+
+		<script type="module" src="/js/workers/index.js"></script>
+		<script type="module" src="/js/utils.js"></script>
+		<script type="module" src="/js/logsRepoHandler.js"></script>
+		<script type="module" src="/js/listHandler.js"></script>
+		<script type="module" src="/js/restartLogsList.js"></script>
+		<script type="module" src="/js/filter.js"></script>
+	</body>
+</html>

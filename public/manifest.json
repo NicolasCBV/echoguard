@@ -1,0 +1,21 @@
+{
+  "name": "Echo Guard",
+  "short_name": "Echoguard",
+  "start_url": "logs",
+  "display": "standalone",
+  "background_color": "#1C1C1C",
+  "theme_color": "#26945D",
+  "orientation": "natural",
+  "icons": [
+    {
+      "src": "/images/logo32.png",
+      "sizes": "320x320",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/logo16.png",
+      "sizes": "160x160",
+      "type": "image/png"
+    }
+  ]
+}

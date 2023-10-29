@@ -1,0 +1,139 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-color: #26945D;
+  --primary-color-hover: #42BA7E;
+  --primary-light-color-hover: rgb(63 157 110 / 0.6);
+  --secondary-color: #5BBA6F;
+  --bg-color: #1C1C1C;
+  --secondary-bg-color: #2D2D2D;
+  --secondary-bg-color-hover: #4D4D4D;
+
+  --info-color: #92DCE5;
+  --warning-color: #FAA916;
+  --error-color: #E71D36;
+  --critical-color: #96031A;
+  --alert-color: #F46036;
+  --emergency-color: #4A040E;
+}
+
+body {
+  display: grid;
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  gap: 2rem;
+  overflow-x: hidden;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+}
+
+button {
+  border: none;
+}
+
+h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: white;
+}
+
+h2 {
+  font-size: 1.25rem;
+  color: white;
+}
+
+h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: white;
+}
+
+p {
+  font-size: 0.75rem;
+  color: white;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  width: fit-content;
+  color: white;
+}
+
+li {
+  list-style: none;
+}
+
+.button {
+  display: flex;
+  background-color: var(--primary-color);
+  justify-content: center;
+  color: white;
+  align-items: center;
+  text-align: center;
+  font-size: 0.75rem;
+  width: 33vw;
+  max-width: 10rem;
+  height: 2rem;
+  border: none;
+  border-radius: 8px;
+  outline-color: var(--primary-color);
+  outline-offset: 0.15rem;
+  outline-width: 2px;
+  transition: background-color 0.2s;
+}
+
+.button:focus {
+  outline-style: solid;
+}
+
+.button:hover {
+  background-color: var(--primary-color-hover);
+  cursor: pointer;
+}
+
+.outline-button {
+  display: flex;
+  border: 1px solid var(--primary-color);
+  background-color: transparent;
+  justify-content: center;
+  color: white;
+  align-items: center;
+  text-align: center;
+  font-size: 0.75rem;
+  width: 33vw;
+  max-width: 10rem;
+  height: 2rem;
+  border-radius: 8px;
+  outline-color: var(--primary-color);
+  outline-offset: 0.15rem;
+  outline-width: 2px;
+  transition: background-color 0.2s;
+}
+
+.outline-button:focus {
+  outline-style: solid;
+}
+
+.outline-button:hover {
+  background-color: var(--primary-light-color-hover);
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #838080;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
