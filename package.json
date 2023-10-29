@@ -1,7 +1,7 @@
 {
   "name": "echoguard",
   "version": "0.0.5",
-  "description": "(ALPHA TEST) Lib used to handle with logs",
+  "description": "NPM package made to help you visualize your logs.",
   "author": "Nícolas Basilio",
   "license": "MIT",
   "main": "build/main.js",
