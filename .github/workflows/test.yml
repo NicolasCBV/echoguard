@@ -33,8 +33,12 @@ jobs:
           run: pnpm run test:e2e
 
     coveralls:
+<<<<<<< HEAD
       needs: [tests]
       runs-on: ubuntu-latest
+=======
+      runs_on: ubuntu-latest
+>>>>>>> 0de8247 (ci(tests): add coveralls)
       steps:
         - uses: actions/checkout@v3
         - uses: pnpm/action-setup@v2
