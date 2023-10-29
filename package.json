@@ -8,6 +8,10 @@
   "private": false,
   "module": "build/main.mjs",
   "type": "build/main.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NicolasCBV/echoguard"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -23,6 +27,7 @@
     "lint": "eslint \"{src,tests}/**/*.ts\"",
     "lint:fix": "eslint --fix",
     "format": "prettier --write",
+    "coveralls": "jest --coverage --config ./jest.global.config.ts && rm ./log.test.db && rm ./log.test.db-lock",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
@@ -64,6 +69,7 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "commitizen": "^4.3.0",
+    "coveralls": "^3.1.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",

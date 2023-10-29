@@ -1,73 +1,58 @@
 <p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
+  <a href="http://nestjs.com/" target="blank"><img src="./public/images/logo.png" width="200" alt="Echoguard Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+<p align="center">
+  <a href="https://coveralls.io/repos/github/NicolasCBV/echoguard/badge.svg?branch=develop" target="_blank">
+    <img src="https://coveralls.io/repos/github/NicolasCBV/echoguard/badge.svg?branch=develop" alt="coverage percentage" />
+  </a>
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
+  <a href="https://img.shields.io/npm/v/echoguard?color=success" target="_blank">
+    <img src="https://img.shields.io/npm/v/echoguard?color=success" alt="package version" />
+  </a>
+
+  <a href="https://img.shields.io/npm/l/echoguard" target="_blank">
+    <img src="https://img.shields.io/npm/l/echoguard" alt="license" />
+  </a>
+
+  <a href="https://www.linkedin.com/in/n%C3%ADcolas-cleiton-707688227/" target="_blank">
+    <img src="https://img.shields.io/badge/Social-linkedin-blue" alt="my linkedin" />
+  </a>
+
+  <a href="https://github.com/NicolasCBV" target="_blank">
+    <img src="https://img.shields.io/badge/Social-github-black" alt="my github" />
+  </a>
+
+  <a href="https://portfolio-or1x.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Social-portfolio-pink" alt="my portfolio" />
+  </a>
 </p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Echoguard
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Welcome to the echoguard! This package was made to help you monitor your logs in development mode in nestjs applications!
 
-## Installation
+## USAGE
+Start your nestjs application and insert your server instance + the name of your application in this method below:
 
-```bash
-$ pnpm install
+```
+const app: NestExpressApplication =
+await NestFactory.create<NestExpressApplication>(AppModule);
+
+Echo.start({ server: app, appName: "<THE NAME OF YOUR APP>" });
+
+await app.listen(3000);
 ```
 
-## Running the app
+After that, you will have one database installed on the root of your project, be sure to ignore that in your gitignore file. With this in mind, now you can create your logs as you need them using this method below:
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```
+Echo.create({
+    name: 'some log',
+    level: Logger.LogsLevelEnum.[THE LEVEL OF YOUR LOG],
+    layer: 'where this log was launched (optional)',
+    description: 'the description of this log'
+});
 ```
 
-## Test
-
-```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Every time you access /logs, you will see all the logs created by this method.
