@@ -18,18 +18,20 @@ export class LMDBService implements LogRepo {
 	}
 
 	async create(input: LogEntitie): Promise<void> {
-		const key = `${input.id}-${input.name.replaceAll(" ", "_")}`;
+		const key = encodeURIComponent(
+			`${input.id}-${input.name.replaceAll(" ", "_")}`,
+		);
 
 		const logObject = LogMapper.toObject(input);
 		await this.db.put(key, logObject);
 	}
 
 	async delete(key: string): Promise<void> {
-		await this.db.remove(key);
+		await this.db.remove(encodeURIComponent(key));
 	}
 
 	async getAll(): Promise<LogEntitie[]> {
-		const logs: LogEntitie[] = [];
+		const rawLogs: LogEntitie[] = [];
 		this.db.getRange({}).forEach(({ value }) => {
 			const rawLog = ScanDBOutput.expectForLog(value);
 			const parsedLog = LogMapper.toClass({
@@ -37,7 +39,13 @@ export class LMDBService implements LogRepo {
 				level: convertLogLevels(rawLog.level),
 			});
 
-			logs.push(parsedLog);
+			rawLogs.push(parsedLog);
+		});
+
+		const logs = rawLogs.sort((a, b) => {
+			if (a.createdAt > b.createdAt) return -1;
+			else if (a.createdAt < b.createdAt) return 1;
+			else return 0;
 		});
 
 		return logs;
