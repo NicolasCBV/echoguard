@@ -1,6 +1,6 @@
 {
   "name": "echoguard",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "NPM package made to help you visualize your logs.",
   "author": "Nícolas Basilio",
   "license": "MIT",
