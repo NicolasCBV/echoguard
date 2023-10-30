@@ -58,7 +58,7 @@
 
 			<ul id="logs">
 				<% logs.forEach(function (log) { %>
-					<li id="<%= log.id %>-<%= log.name.replaceAll(' ', '_') %>">
+					<li id="<%= log.id %>-<%= encodeURIComponent(log.name.replaceAll(' ', '_')) %>">
 						<button type="button">
 							<i class="level fa-solid 
 								<% switch(log.level) {

@@ -7,16 +7,18 @@ class ListHandler {
     this.deleteButtonEvent = this.deleteButtonEvent.bind(this);
   }
 
-  deleteButtonKey = (id, name) => `delete-log.${id}-${name.replaceAll(' ', '_')}`;
-  buildPopup = (id, name, level, layer, desc, createdAt) => `
-    <div id="wrapper">
+  deleteButtonKey = (id, name) => encodeURIComponent(`delete-log.${id}-${name.replaceAll(' ', '_')}`);
+  buildPopup = (id, name, level, layer, desc, createdAt) => {
+    const date = Utils.formatDate(new Date(createdAt));
+      
+    return `<div id="wrapper">
         <div id="pop-up">
             <i class="level fa-solid ${Utils.getAwesomeIcon(level)}"></i>
             <div id="pop-up-infos">
                 <h2>${name}</h2>
                 <p><b>Level</b>: ${level}</p>
                 <p><b>Layer</b>: ${layer}</p>
-                <p><b>Created at</b>: ${new Date(createdAt).toUTCString()}</p>
+                <p><b>Created at</b>: ${date}</p>
                 <div id="popup-description">
                   <p><b>Description</b>:</p>
                   <p>${desc}</p>
@@ -32,8 +34,8 @@ class ListHandler {
                 </button>
             </div>
         </div>
-    </div>
-  `;
+    </div>`
+  };
 
   reloadList(logs) {
     const cards = document.querySelectorAll("#logs li");
@@ -106,6 +108,8 @@ class ListHandler {
 
     backButton.removeEventListener("click", () => {});
     backButton.addEventListener("click", this.backButtonEvent);
+
+    if(!existentEvent) this.cardEvents.push(id);
   }
 
   trackEvents(logs = logsRepo.logs) {

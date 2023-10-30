@@ -6,14 +6,14 @@ function genSeed() {
 	const lmdb = new LMDBService();
 
 	const log1 = new LogEntitie({
-		name: "Could not create user",
+		name: "Could no't create user",
 		description: "Can't create user because service failed on execution",
 		layer: "Service",
 		level: Echo.LogsLevelEnum.error,
 	});
 
 	const log2 = new LogEntitie({
-		name: "Can't set CORS",
+		name: "Can't set \"CORS",
 		description: "Can' define CORS because main function failed",
 		layer: "Security",
 		level: Echo.LogsLevelEnum.emergency,

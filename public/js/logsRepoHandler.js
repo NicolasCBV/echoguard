@@ -6,12 +6,22 @@ class LogsRepoHandler {
   }
 
   getByLevel(input) {
+    let repo = [];
     if(input !== 'ALL')
-      return this.logs.filter((item) => (
+      repo = this.logs.filter((item) => (
         item.level === input
       ));
+    else
+      repo = this.logs;
 
-    return this.logs;
+    return repo.sort((a, b) => {
+        if(a.createdAt > b.createdAt)
+            return -1;
+        else if( a.createdAt < b.createdAt)
+            return 1;
+        else
+            return 0;
+    });
   }
 }
 
