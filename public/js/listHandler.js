@@ -130,6 +130,8 @@ class ListHandler {
 
     backButton.removeEventListener("click", () => {});
     backButton.addEventListener("click", this.backButtonEvent);
+
+    if(!existentEvent) this.cardEvents.push(id);
   }
 
   trackEvents(logs = logsRepo.logs) {
