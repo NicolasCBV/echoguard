@@ -22,6 +22,7 @@ const config: Config = {
     "/node_modules/",
     "/dist/",
     "/build/",
+    "/src/infra/storages/redis/seed.ts",
     "/src/infra/storages/lmdb/seed.ts",
     "/public/",
     "/views/"

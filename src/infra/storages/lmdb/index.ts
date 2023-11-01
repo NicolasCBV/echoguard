@@ -1,7 +1,12 @@
 import { LogEntitie } from "@app/entities/log";
 import { LogMapper } from "@app/mapper/log";
 import { RootDatabase, open } from "lmdb";
-import { LogRepo } from "@app/repositories/logs";
+import {
+	IDeleteLog,
+	IGetLimitedLogsReturn,
+	IGetLimitedProps,
+	LogRepo,
+} from "@app/repositories/logs";
 import { ScanDBOutput } from "@infra/DTO/scanDBOutput";
 import { convertLogLevels } from "@utils/convertLogLevels";
 
@@ -19,28 +24,37 @@ export class LMDBService implements LogRepo {
 
 	async create(input: LogEntitie): Promise<void> {
 		const key = encodeURIComponent(
-			`${input.id}-${input.name.replaceAll(" ", "_")}`,
+			`logs:${input.id}-${input.name.replaceAll(" ", "_")}`,
 		);
 
 		const logObject = LogMapper.toObject(input);
 		await this.db.put(key, logObject);
 	}
 
-	async delete(key: string): Promise<void> {
-		await this.db.remove(encodeURIComponent(key));
+	async delete({ name, id }: IDeleteLog): Promise<void> {
+		const parsedKey = encodeURIComponent(
+			`logs:${id}-${name.replaceAll(" ", "_")}`,
+		);
+		await this.db.remove(encodeURIComponent(parsedKey));
 	}
 
-	async getAll(): Promise<LogEntitie[]> {
-		const rawLogs: LogEntitie[] = [];
-		this.db.getRange({}).forEach(({ value }) => {
-			const rawLog = ScanDBOutput.expectForLog(value);
-			const parsedLog = LogMapper.toClass({
-				...rawLog,
-				level: convertLogLevels(rawLog.level),
-			});
+	async deleteAll(): Promise<void> {
+		await this.db.clearAsync();
+	}
 
-			rawLogs.push(parsedLog);
-		});
+	async getLimited(input: IGetLimitedProps): Promise<IGetLimitedLogsReturn> {
+		const rawLogs: LogEntitie[] = [];
+		this.db
+			.getRange({ start: 0, limit: input.limit })
+			.forEach(({ value }) => {
+				const rawLog = ScanDBOutput.expectForLog(value);
+				const parsedLog = LogMapper.toClass({
+					...rawLog,
+					level: convertLogLevels(rawLog.level),
+				});
+
+				rawLogs.push(parsedLog);
+			});
 
 		const logs = rawLogs.sort((a, b) => {
 			if (a.createdAt > b.createdAt) return -1;
@@ -48,14 +62,8 @@ export class LMDBService implements LogRepo {
 			else return 0;
 		});
 
-		return logs;
-	}
+		const next = logs.length > 50 ? Boolean(logs.pop()) : false;
 
-	async deleteAll(): Promise<void> {
-		await this.db.clearAsync();
+		return { logs, next };
 	}
 }
-
-const lmdbRepo = new LMDBService();
-
-export { lmdbRepo };

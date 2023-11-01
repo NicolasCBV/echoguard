@@ -3,16 +3,20 @@ import { NestExpressApplication } from "@nestjs/platform-express";
 import { Echo } from "../main";
 import { Test } from "@nestjs/testing";
 import { logFactory } from "@tests/factories/log";
-import { LogRepo } from "@app/repositories/logs";
 import { ProductionLogStorage } from "@infra/storages/productionStorage";
+import { RedisRepo } from "@infra/storages/redis";
 
-describe("Test Nest Application [LMDB]", () => {
+describe("Test Nest Application [Redis]", () => {
 	let app: NestExpressApplication;
-	let repo: LogRepo;
+	let repo: RedisRepo;
 
-	beforeEach(async () => {
-		const productionLogs = new ProductionLogStorage();
-		repo = productionLogs.database;
+	beforeAll(async () => {
+		const productionLogs = new ProductionLogStorage({
+			url: "redis://default:@localhost:6379",
+			database: "REDIS",
+		});
+		repo = productionLogs.getDB<RedisRepo>();
+
 		await repo.deleteAll();
 
 		const moduleRef = await Test.createTestingModule({}).compile();
@@ -27,7 +31,12 @@ describe("Test Nest Application [LMDB]", () => {
 		await app.init();
 	});
 
+	beforeEach(async () => {
+		await repo.deleteAll();
+	});
+
 	afterAll(async () => {
+		await repo.quit();
 		await app.close();
 	});
 

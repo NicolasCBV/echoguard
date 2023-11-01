@@ -1,8 +1,10 @@
 class LogsRepoHandler {
   logs = window.logsEntities;
+  next = window.next;
 
   constructor() {
     window.logsEntities = undefined;
+    window.next = undefined;
   }
 
   getByLevel(input) {

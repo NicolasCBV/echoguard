@@ -9,8 +9,7 @@ export class DeleteLogController {
 
 	async exec(req: Request, res: Response) {
 		const body = DeleteLogServiceDTO.validate(req.body);
-		const key = `${body.id}-${body.name.replaceAll(" ", "_")}`;
-		await this.deleteLog.exec({ key });
+		await this.deleteLog.exec(body);
 
 		res.status(204).end();
 	}

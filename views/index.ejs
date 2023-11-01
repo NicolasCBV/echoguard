@@ -57,7 +57,7 @@
 			<span class="division"></span>
 
 			<ul id="logs">
-				<% logs.forEach(function (log) { %>
+				<% collection.logs.forEach(function (log) { %>
 					<li id="<%= log.id %>-<%= encodeURIComponent(log.name.replaceAll(' ', '_')) %>">
 						<button type="button">
 							<i class="level fa-solid 
@@ -98,7 +98,8 @@
 		</main>
 
 		<script>
-			window.logsEntities = <%- JSON.stringify(logs) %>;
+			window.logsEntities = <%- JSON.stringify(collection.logs) %>;
+			window.next = <%- JSON.stringify(collection.next) %>
 		</script>
 
 		<script type="module" src="/js/workers/index.js"></script>

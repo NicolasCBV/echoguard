@@ -62,6 +62,25 @@ class ListHandler {
     }  
   }
 
+  async getMoreLogs() {
+    return await fetch('/logs/limited', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ start: 0, limit: 50 })
+    })
+      .then((res) => {
+        if(res.status >= 400)
+          throw new Error("Could not finish the requisition");
+        return res.json();
+      })
+      .then((data) => { 
+        logsRepo.logs = data.logs;
+        logsRepo.next = data.next;
+      });
+  }
+
   async deleteButtonEvent(id, name) {
     const logIndex = logsRepo.logs.findIndex((item) => (
       item.id === id && item.name === name
@@ -79,6 +98,9 @@ class ListHandler {
         if(res.status >= 400)
           throw new Error("Could not finish the requisition");
       });
+
+    if(logsRepo.logs.length <= 25 && logsRepo.next)
+      await this.getMoreLogs();
 
     const visibleLogs = logsRepo.getByLevel(filter.actualLevel);
     this.reloadList(visibleLogs);
@@ -108,8 +130,6 @@ class ListHandler {
 
     backButton.removeEventListener("click", () => {});
     backButton.addEventListener("click", this.backButtonEvent);
-
-    if(!existentEvent) this.cardEvents.push(id);
   }
 
   trackEvents(logs = logsRepo.logs) {
