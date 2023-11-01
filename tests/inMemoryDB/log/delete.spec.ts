@@ -14,13 +14,13 @@ describe("In Memory Log delete test", () => {
 		const log = logFactory();
 
 		expect(sut.create(log)).toBeTruthy();
-		expect(sut.delete(log.id)).toBeTruthy();
+		expect(sut.delete({ name: log.name, id: log.id })).toBeTruthy();
 	});
 
 	it("should throw one error - 'Entitie doesn't exist'", async () => {
 		const log = logFactory();
 
-		expect(sut.delete(log.id)).rejects.toThrowError(
+		expect(sut.delete({ name: log.name, id: log.id })).rejects.toThrowError(
 			new InMemoryError({
 				message: "Entitie doesn't exist",
 				entitie: EntitiesEnum.log,

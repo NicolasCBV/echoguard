@@ -1,7 +1,12 @@
 import { LogEntitie } from "@app/entities/log";
 import { InMemoryError } from "../error";
 import { EntitiesEnum } from "@app/entities/entitiesEnum";
-import { LogRepo } from "@app/repositories/logs";
+import {
+	IDeleteLog,
+	IGetLimitedLogsReturn,
+	IGetLimitedProps,
+	LogRepo,
+} from "@app/repositories/logs";
 
 export class InMemoryLogDB implements LogRepo {
 	public readonly logs: LogEntitie[] = [];
@@ -18,8 +23,10 @@ export class InMemoryLogDB implements LogRepo {
 		this.logs.push(input);
 	}
 
-	async delete(key: string): Promise<void> {
-		const existentIndexLog = this.logs.findIndex((item) => item.id === key);
+	async delete(input: IDeleteLog): Promise<void> {
+		const existentIndexLog = this.logs.findIndex(
+			(item) => item.id === input.id,
+		);
 
 		if (existentIndexLog < 0)
 			throw new InMemoryError({
@@ -34,7 +41,19 @@ export class InMemoryLogDB implements LogRepo {
 		this.logs.splice(0, this.logs.length - 1);
 	}
 
-	async getAll(): Promise<LogEntitie[]> {
-		return this.logs;
+	async getLimited(input: IGetLimitedProps): Promise<IGetLimitedLogsReturn> {
+		const logs = [];
+
+		const end =
+			this.logs.length - 1 < input.limit
+				? this.logs.length - 1
+				: input.limit;
+		for (input.start; input.start <= end; input.start++)
+			logs.push(this.logs[input.start]);
+
+		return {
+			logs,
+			next: Boolean(logs[input.limit + 1]),
+		};
 	}
 }

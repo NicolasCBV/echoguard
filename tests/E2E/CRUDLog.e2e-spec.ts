@@ -1,26 +1,28 @@
 import { CreateLogService } from "@app/services/createLog.service";
 import { DeleteLogService } from "@app/services/deleteLog.service";
-import { GetAllLogService } from "@app/services/getAllLog.service";
-import { lmdbRepo } from "@infra/storages/lmdb";
+import { ProductionLogStorage } from "@infra/storages/productionStorage";
 import { Echo } from "../../main";
 import { DeleteAllLogsService } from "@app/services/deleteAllLogs.service";
+import { GetLimitedLogsService } from "@app/services/getLimitedLogs.service";
 
 describe("CRUD Log E2E Test", () => {
 	let sut1Create: CreateLogService;
-	let sut2GetAll: GetAllLogService;
+	let sut2GetLimitedLogs: GetLimitedLogsService;
 	let sut3Delete: DeleteLogService;
 	let sut4DeleteAll: DeleteAllLogsService;
 
 	beforeEach(async () => {
-		await lmdbRepo.deleteAll();
+		const repo = new ProductionLogStorage().database;
 
-		sut1Create = new CreateLogService(lmdbRepo);
-		sut2GetAll = new GetAllLogService(lmdbRepo);
-		sut3Delete = new DeleteLogService(lmdbRepo);
-		sut4DeleteAll = new DeleteAllLogsService(lmdbRepo);
+		await repo.deleteAll();
+
+		sut1Create = new CreateLogService(repo);
+		sut2GetLimitedLogs = new GetLimitedLogsService(repo);
+		sut3Delete = new DeleteLogService(repo);
+		sut4DeleteAll = new DeleteAllLogsService(repo);
 	});
 
-	it("should be able to make a CRUD of logs", async () => {
+	it("should be able to create logs", async () => {
 		const log = {
 			layer: "unknown",
 			level: Echo.LogsLevelEnum.info,
@@ -32,35 +34,100 @@ describe("CRUD Log E2E Test", () => {
 			layer: "unknown",
 			level: Echo.LogsLevelEnum.info,
 			description: "Some description",
-			name: "Some log",
+			name: "I am equal",
 		};
 
 		const log2 = {
 			layer: "unknown",
 			level: Echo.LogsLevelEnum.info,
 			description: "Some description",
-			name: "Some log",
+			name: "I am equal",
 		};
 
 		await sut1Create.exec({ ...log });
 		await sut1Create.exec({ ...log1 });
 		await sut1Create.exec({ ...log2 });
+	});
 
-		const searchedLog = (await sut2GetAll.exec())[0];
+	it("should be able to get range of logs", async () => {
+		const log = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
 
-		expect(searchedLog.name === log.name).toBeTruthy();
-		expect(searchedLog.layer === log.layer).toBeTruthy();
-		expect(searchedLog.level === log.level).toBeTruthy();
-		expect(searchedLog.description === log.description).toBeTruthy();
+		const log1 = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
 
+		await sut1Create.exec({ ...log });
+		await sut1Create.exec({ ...log1 });
+
+		const searchedLogs = await sut2GetLimitedLogs.exec({
+			start: 1,
+			limit: 2,
+		});
+		expect(searchedLogs.logs.length).toEqual(2);
 		expect(
-			await sut3Delete.exec({
-				key: `${searchedLog.id}-${log.name.replaceAll(" ", "_")}`,
-			}),
-		).resolves;
-		expect((await sut2GetAll.exec()).length).toEqual(2);
+			searchedLogs.logs[0].name === searchedLogs.logs[1].name,
+		).toBeTruthy();
+	});
+
+	it("should be able to delete a log", async () => {
+		const log = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+		await sut1Create.exec({ ...log });
+		const searchedLogs = (
+			await sut2GetLimitedLogs.exec({
+				start: 1,
+				limit: 1,
+			})
+		).logs;
+
+		await sut3Delete.exec({
+			name: searchedLogs[0].name,
+			id: searchedLogs[0].id,
+		});
+
+		const validateSearchedLogs = await sut2GetLimitedLogs.exec({
+			start: 0,
+			limit: 1,
+		});
+		expect(validateSearchedLogs.logs.length).toEqual(0);
+	});
+
+	it("should be able to delete many", async () => {
+		const log = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+
+		const log1 = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+
+		await sut1Create.exec({ ...log });
+		await sut1Create.exec({ ...log1 });
 
 		expect(await sut4DeleteAll.exec()).resolves;
-		expect((await lmdbRepo.getAll()).length).toEqual(0);
+
+		const checkSearchedLogs = await sut2GetLimitedLogs.exec({
+			start: 0,
+			limit: 2,
+		});
+		expect(checkSearchedLogs.logs.length).toEqual(0);
 	});
 });

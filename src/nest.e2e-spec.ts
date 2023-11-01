@@ -2,20 +2,28 @@ import * as request from "supertest";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { Echo } from "../main";
 import { Test } from "@nestjs/testing";
-import { lmdbRepo } from "@infra/storages/lmdb";
 import { logFactory } from "@tests/factories/log";
+import { LogRepo } from "@app/repositories/logs";
+import { ProductionLogStorage } from "@infra/storages/productionStorage";
 
-describe("Test Nest Application", () => {
+describe("Test Nest Application [LMDB]", () => {
 	let app: NestExpressApplication;
+	let repo: LogRepo;
 
 	beforeEach(async () => {
-		await lmdbRepo.deleteAll();
+		const productionLogs = new ProductionLogStorage();
+		repo = productionLogs.database;
+		await repo.deleteAll();
 
 		const moduleRef = await Test.createTestingModule({}).compile();
 
 		app = moduleRef.createNestApplication<NestExpressApplication>();
 
-		Echo.start({ server: app, appName: "Test App" });
+		Echo.start({
+			server: app,
+			appName: "Test App",
+			environment: productionLogs,
+		});
 		await app.init();
 	});
 
@@ -29,11 +37,38 @@ describe("Test Nest Application", () => {
 		expect(res.status === 200).toBeTruthy();
 	});
 
+	it("should be able to get range of logs", async () => {
+		const log = logFactory();
+		const log1 = logFactory(
+			{
+				name: "I am diferent",
+			},
+			"diferent id",
+		);
+		await repo.create(log);
+		await repo.create(log1);
+
+		const res = await request(app.getHttpServer())
+			.post("/logs/limited")
+			.send({
+				start: 0,
+				limit: 2,
+			})
+			.set("content-type", "application/json");
+
+		expect(res.status === 200).toBeTruthy();
+
+		const registeredLogs = (await repo.getLimited({ start: 0, limit: 2 }))
+			.logs;
+		expect(registeredLogs.length).toEqual(2);
+	});
+
 	it("should be able to delete a log", async () => {
 		const log = logFactory();
-		await lmdbRepo.create(log);
+		await repo.create(log);
 
-		const registeredLog = (await lmdbRepo.getAll())[0];
+		const registeredLog = (await repo.getLimited({ start: 0, limit: 1 }))
+			.logs[0];
 
 		const res = await request(app.getHttpServer())
 			.delete("/logs")
@@ -44,13 +79,26 @@ describe("Test Nest Application", () => {
 			.set("content-type", "application/json");
 
 		expect(res.status === 204).toBeTruthy();
+
+		const validateRegisteredLogs = (
+			await repo.getLimited({ start: 0, limit: 1 })
+		).logs;
+		expect(validateRegisteredLogs.length).toEqual(0);
 	});
 
 	it("should be able to delete all logs", async () => {
 		const log = logFactory();
-		await lmdbRepo.create(log);
+		const log1 = logFactory(
+			{
+				name: "I am diferent",
+			},
+			"diferent id",
+		);
+		await repo.create(log);
+		await repo.create(log1);
 
-		const registeredLog = (await lmdbRepo.getAll())[0];
+		const registeredLog = (await repo.getLimited({ start: 0, limit: 2 }))
+			.logs[0];
 
 		const res = await request(app.getHttpServer())
 			.delete("/logs/all")
@@ -61,5 +109,10 @@ describe("Test Nest Application", () => {
 			.set("content-type", "application/json");
 
 		expect(res.status === 204).toBeTruthy();
+
+		const validateRegisteredLogs = (
+			await repo.getLimited({ start: 0, limit: 1 })
+		).logs;
+		expect(validateRegisteredLogs.length).toEqual(0);
 	});
 });

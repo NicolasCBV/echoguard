@@ -1,6 +1,6 @@
 {
   "name": "echoguard",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "NPM package made to help you visualize your logs.",
   "author": "Nícolas Basilio",
   "license": "MIT",
@@ -23,7 +23,10 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "seed": "npm run build:all && node ./dist/src/infra/storages/lmdb/seed.js",
+    "seed:redis": "npm run build:all && node ./dist/src/infra/storages/redis/seed.js",
+    "seed:redis:prebuild": "node ./dist/src/infra/storages/redis/seed.js",
+    "seed:lmdb": "npm run build:all && node ./dist/src/infra/storages/lmdb/seed.js",
+    "seed:lmdb:prebuild": "node ./dist/src/infra/storages/lmdb/seed.js",
     "lint": "eslint \"{src,tests}/**/*.ts\"",
     "lint:fix": "eslint --fix",
     "format": "prettier --write",
@@ -50,6 +53,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
+    "ioredis": "^5.3.2",
     "lmdb": "^2.8.5",
     "yup": "^1.3.2"
   },

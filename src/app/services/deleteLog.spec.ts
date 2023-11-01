@@ -14,6 +14,6 @@ describe("Delete log service test", () => {
 	it("should be able to delete a log", async () => {
 		const log = logFactory();
 		await logRepo.create(log);
-		expect(sut.exec({ key: log.id })).resolves;
+		expect(sut.exec({ name: log.name, id: log.id })).resolves;
 	});
 });
