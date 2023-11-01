@@ -22,7 +22,7 @@ describe("CRUD Log E2E Test", () => {
 		sut4DeleteAll = new DeleteAllLogsService(repo);
 	});
 
-	it("should be able to make a CRUD of logs", async () => {
+	it("should be able to create logs", async () => {
 		const log = {
 			layer: "unknown",
 			level: Echo.LogsLevelEnum.info,
@@ -47,35 +47,87 @@ describe("CRUD Log E2E Test", () => {
 		await sut1Create.exec({ ...log });
 		await sut1Create.exec({ ...log1 });
 		await sut1Create.exec({ ...log2 });
+	});
+
+	it("should be able to get range of logs", async () => {
+		const log = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+
+		const log1 = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+
+		await sut1Create.exec({ ...log });
+		await sut1Create.exec({ ...log1 });
 
 		const searchedLogs = await sut2GetLimitedLogs.exec({
 			start: 1,
-			limit: 3,
+			limit: 2,
 		});
-		expect(searchedLogs.logs.length).toEqual(3);
+		expect(searchedLogs.logs.length).toEqual(2);
 		expect(
 			searchedLogs.logs[0].name === searchedLogs.logs[1].name,
 		).toBeTruthy();
+	});
 
-		expect(
-			await sut3Delete.exec({
-				id: searchedLogs.logs[0].id,
-				name: searchedLogs.logs[0].name,
-			}),
-		).resolves;
+	it("should be able to delete a log", async () => {
+		const log = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+		await sut1Create.exec({ ...log });
+		const searchedLogs = (
+			await sut2GetLimitedLogs.exec({
+				start: 1,
+				limit: 1,
+			})
+		).logs;
+
+		await sut3Delete.exec({
+			name: searchedLogs[0].name,
+			id: searchedLogs[0].id,
+		});
+
+		const validateSearchedLogs = await sut2GetLimitedLogs.exec({
+			start: 0,
+			limit: 1,
+		});
+		expect(validateSearchedLogs.logs.length).toEqual(0);
+	});
+
+	it("should be able to delete many", async () => {
+		const log = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+
+		const log1 = {
+			layer: "unknown",
+			level: Echo.LogsLevelEnum.info,
+			description: "Some description",
+			name: "I am equal",
+		};
+
+		await sut1Create.exec({ ...log });
+		await sut1Create.exec({ ...log1 });
+
+		expect(await sut4DeleteAll.exec()).resolves;
 
 		const checkSearchedLogs = await sut2GetLimitedLogs.exec({
 			start: 0,
-			limit: 3,
+			limit: 2,
 		});
-		expect(checkSearchedLogs.logs.length).toEqual(2);
-		expect(
-			checkSearchedLogs.logs[0].name !== checkSearchedLogs.logs[1].name,
-		).toBeTruthy();
-
-		expect(await sut4DeleteAll.exec()).resolves;
-		expect(
-			(await sut2GetLimitedLogs.exec({ start: 0, limit: 3 })).logs.length,
-		).toEqual(0);
+		expect(checkSearchedLogs.logs.length).toEqual(0);
 	});
 });

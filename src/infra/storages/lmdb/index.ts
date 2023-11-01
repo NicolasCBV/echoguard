@@ -35,7 +35,7 @@ export class LMDBService implements LogRepo {
 		const parsedKey = encodeURIComponent(
 			`logs:${id}-${name.replaceAll(" ", "_")}`,
 		);
-		await this.db.remove(encodeURIComponent(parsedKey));
+		await this.db.remove(parsedKey);
 	}
 
 	async deleteAll(): Promise<void> {
