@@ -56,14 +56,20 @@ export class RedisRepo implements LogRepo {
 		);
 		const next = logs[1].length > 50 ? Boolean(logs[1].pop()) : false;
 
-		const parsedLogs = [];
+		const rawLogs = [];
 		for await (const key of logs[1]) {
 			const rawLog = await this.redis.get(key);
 			if (!rawLog) break;
 
 			const log = LogMapper.toClass(JSON.parse(rawLog));
-			parsedLogs.push(log);
+			rawLogs.push(log);
 		}
+
+		const parsedLogs = rawLogs.sort((a, b) => {
+			if (a.createdAt > b.createdAt) return -1;
+			else if (a.createdAt < b.createdAt) return 1;
+			else return 0;
+		});
 
 		return {
 			logs: parsedLogs,
